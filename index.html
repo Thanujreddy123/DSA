@@ -9,39 +9,52 @@
 <body>
     <header>
         <h1>Learning Portal</h1>
-        <p>Explore SQL, DSA, GitHub, System Design, and More</p>
+        <p>Click on a category to explore topics and learn!</p>
     </header>
-    
-    <div class="main-container">
-        <!-- SQL Category -->
-        <div class="category-plate" onclick="openCategory('sql')">
+
+    <div class="main-container" id="main-container">
+        <!-- Main Categories -->
+        <div class="category-plate" onclick="showSubTopics('sql')">
             <h2>SQL</h2>
             <p>Learn SQL: Structured Query Language for database management.</p>
         </div>
-        
-        <!-- DSA Category -->
-        <div class="category-plate" onclick="openCategory('dsa')">
+
+        <div class="category-plate" onclick="showSubTopics('dsa')">
             <h2>DSA</h2>
             <p>Learn Data Structures and Algorithms to solve problems efficiently.</p>
         </div>
-        
-        <!-- GitHub Category -->
-        <div class="category-plate" onclick="openCategory('github')">
+
+        <div class="category-plate" onclick="showSubTopics('github')">
             <h2>GitHub</h2>
             <p>Master version control and collaboration with Git and GitHub.</p>
         </div>
-        
-        <!-- System Design Category -->
-        <div class="category-plate" onclick="openCategory('system-design')">
+
+        <div class="category-plate" onclick="showSubTopics('system-design')">
             <h2>System Design</h2>
             <p>Learn how to design scalable and efficient systems.</p>
         </div>
 
-        <!-- Other Information Category -->
-        <div class="category-plate" onclick="openCategory('other-info')">
+        <div class="category-plate" onclick="showSubTopics('other-info')">
             <h2>Other Information</h2>
             <p>Explore different topics and expand your knowledge.</p>
         </div>
+    </div>
+
+    <div class="sub-topic-container" id="sub-topic-container"></div>
+
+    <div class="add-topic-form" id="add-topic-form" style="display:none;">
+        <h2>Add a New Topic</h2>
+        <form id="topicForm">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+            <label for="reason">Main Reason:</label>
+            <input type="text" id="reason" name="reason" required>
+            <label for="code">Code Example:</label>
+            <textarea id="code" name="code" required></textarea>
+            <label for="extra">Extra Information:</label>
+            <textarea id="extra" name="extra" required></textarea>
+            <button type="submit">Add Topic</button>
+        </form>
     </div>
 
     <script src="dynamic.js"></script>

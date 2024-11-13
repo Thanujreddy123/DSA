@@ -8,7 +8,7 @@
 /* General body styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f8f8f8;
     color: #333;
 }
 
@@ -21,15 +21,14 @@ header {
 }
 
 header h1 {
-    font-size: 2.5em;
+    font-size: 3em;
 }
 
 header p {
     font-size: 1.2em;
-    margin-top: 10px;
 }
 
-/* Main Container */
+/* Main Categories Section */
 .main-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -37,12 +36,11 @@ header p {
     padding: 30px;
 }
 
-/* Category Plate (Card) Styling */
 .category-plate {
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: center;
@@ -50,7 +48,7 @@ header p {
 
 .category-plate:hover {
     transform: translateY(-10px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .category-plate h2 {
@@ -63,9 +61,58 @@ header p {
     color: #555;
 }
 
-/* Media Queries for responsiveness */
-@media (max-width: 768px) {
-    .main-container {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
+/* Sub-Topics Section (Tiles) */
+.sub-topic-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+
+.sub-topic-plate {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+}
+
+.sub-topic-plate:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.sub-topic-plate h3 {
+    font-size: 1.6em;
+    margin-bottom: 10px;
+}
+
+.sub-topic-plate p {
+    font-size: 1em;
+    color: #555;
+}
+
+.sub-topic-plate code {
+    background-color: #f4f4f4;
+    padding: 5px;
+    display: block;
+    margin-top: 10px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Button to add new topic (if needed) */
+.add-topic-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.add-topic-btn:hover {
+    background-color: #45a049;
 }
