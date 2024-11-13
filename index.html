@@ -14,34 +14,22 @@
 
     <div class="main-container" id="main-container">
         <!-- Main Categories -->
-        <div class="category-plate" onclick="showSubTopics('sql')">
-            <h2>SQL</h2>
-            <p>Learn SQL: Structured Query Language for database management.</p>
+        
+
+        <!-- New Category Creation Button -->
+        <div class="category-plate" id="add-category-btn">
+            <h2>+</h2>
+            <p>Create New Category</p>
         </div>
 
-        <div class="category-plate" onclick="showSubTopics('dsa')">
-            <h2>DSA</h2>
-            <p>Learn Data Structures and Algorithms to solve problems efficiently.</p>
-        </div>
-
-        <div class="category-plate" onclick="showSubTopics('github')">
-            <h2>GitHub</h2>
-            <p>Master version control and collaboration with Git and GitHub.</p>
-        </div>
-
-        <div class="category-plate" onclick="showSubTopics('system-design')">
-            <h2>System Design</h2>
-            <p>Learn how to design scalable and efficient systems.</p>
-        </div>
-
-        <div class="category-plate" onclick="showSubTopics('other-info')">
-            <h2>Other Information</h2>
-            <p>Explore different topics and expand your knowledge.</p>
-        </div>
+        <!-- Placeholder for dynamically added categories -->
+        <div id="new-categories-container"></div>
     </div>
 
+    <!-- Sub-topic Container -->
     <div class="sub-topic-container" id="sub-topic-container"></div>
 
+    <!-- Add Topic Form -->
     <div class="add-topic-form" id="add-topic-form" style="display:none;">
         <h2>Add a New Topic</h2>
         <form id="topicForm">
