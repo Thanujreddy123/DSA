@@ -9,13 +9,11 @@
 <body>
     <header>
         <h1>Learning Portal</h1>
-        <p>Click on a category to explore topics and learn!</p>
+        <p>Click on a category to explore topics, revise, and learn!</p>
     </header>
 
     <div class="main-container" id="main-container">
         <!-- Main Categories -->
-        
-
         <!-- New Category Creation Button -->
         <div class="category-plate" id="add-category-btn">
             <h2>+</h2>
@@ -35,12 +33,16 @@
         <form id="topicForm">
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
+            
             <label for="reason">Main Reason:</label>
             <input type="text" id="reason" name="reason" required>
-            <label for="code">Code Example:</label>
-            <textarea id="code" name="code" required></textarea>
+            
+            <label for="code">Code Example (single-line):</label>
+            <input type="text" id="code" name="code" required>
+            
             <label for="extra">Extra Information:</label>
             <textarea id="extra" name="extra" required></textarea>
+            
             <button type="submit">Add Topic</button>
         </form>
     </div>
