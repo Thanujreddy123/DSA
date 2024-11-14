@@ -18,6 +18,25 @@ const storedTopics = JSON.parse(localStorage.getItem('topics')) || {
     ]
 };
 
+// Function to escape HTML special characters
+function escapeHtml(text) {
+    const element = document.createElement('div');
+    if (text) {
+        element.innerText = text;
+        element.textContent = text;
+    }
+    return element.innerHTML;
+}
+
+// Function to unescape HTML special characters
+function unescapeHtml(text) {
+    const element = document.createElement('div');
+    if (text) {
+        element.innerHTML = text;
+    }
+    return element.innerText;
+}
+
 // Save the topics to LocalStorage
 function saveTopicsToLocalStorage() {
     localStorage.setItem('topics', JSON.stringify(storedTopics));
@@ -42,7 +61,7 @@ function showSubTopics(category) {
         plate.innerHTML = `
             <h3>${topic.title}</h3>
             <p><strong>Why it matters:</strong> ${topic.reason}</p>
-            <pre><code>${topic.code}</code></pre>
+            <pre><code>${unescapeHtml(topic.code)}</code></pre>  <!-- Display the code with unescaped characters -->
             <p><strong>Extra Information:</strong> ${topic.extra}</p>
             <button onclick="deleteTopic('${category}', ${index})">Delete Topic</button>
         `;
@@ -61,11 +80,14 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     const code = document.getElementById('code').value;
     const extra = document.getElementById('extra').value;
 
+    // Escape the code to prevent special characters from breaking HTML
+    const escapedCode = escapeHtml(code);
+
     // Create a new topic object
     const newTopic = {
         title: title,
         reason: reason,
-        code: code,
+        code: escapedCode,  // Store the escaped code
         extra: extra
     };
 
