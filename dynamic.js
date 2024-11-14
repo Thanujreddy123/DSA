@@ -15,64 +15,12 @@ const storedTopics = JSON.parse(localStorage.getItem('topics')) || {
             code: 'DELETE FROM users WHERE id = 1;',
             extra: 'Used to remove data from a table based on a condition.'
         }
-    ],
-    dsa: [
-        {
-            title: 'Arrays',
-            reason: 'Arrays are data structures used to store multiple values.',
-            code: 'let arr = [1, 2, 3, 4];',
-            extra: 'Arrays provide fast access to elements by index.'
-        },
-        {
-            title: 'Linked Lists',
-            reason: 'Linked lists are data structures with nodes connected through pointers.',
-            code: 'let node1 = { value: 1, next: null };',
-            extra: 'Good for dynamic memory allocation and easy insertion/deletion.'
-        }
-    ],
-    github: [
-        {
-            title: 'Basic Git Commands',
-            reason: 'Learning Git commands is fundamental for version control in software development.',
-            code: 'git init\ngit add .\ngit commit -m "Initial commit"\ngit push origin master',
-            extra: 'Git is a distributed version control system.'
-        },
-        {
-            title: 'Forking and Pull Requests',
-            reason: 'Forking repositories and creating pull requests are essential for collaborating on GitHub.',
-            code: 'git fork <repo-url>\ngit clone <forked-repo-url>\ngit push origin branch-name',
-            extra: 'Pull requests allow team collaboration on GitHub.'
-        }
-    ],
-    systemDesign: [
-        {
-            title: 'Load Balancing',
-            reason: 'Load balancing is used to distribute network traffic across multiple servers.',
-            code: 'Implementing a load balancer in cloud environments like AWS, GCP, or Azure.',
-            extra: 'Load balancers can be hardware or software-based.'
-        },
-        {
-            title: 'Microservices Architecture',
-            reason: 'Microservices enable building scalable and maintainable systems by dividing the system into smaller services.',
-            code: 'Microservices communicate using REST APIs or messaging queues.',
-            extra: 'Microservices can be deployed and scaled independently.'
-        }
     ]
 };
 
 // Save the topics to LocalStorage
 function saveTopicsToLocalStorage() {
     localStorage.setItem('topics', JSON.stringify(storedTopics));
-}
-
-// Function to escape HTML characters
-function escapeHtml(unsafe) {
-    return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
 }
 
 // Function to display sub-topics based on the selected category
@@ -91,13 +39,10 @@ function showSubTopics(category) {
         const plate = document.createElement('div');
         plate.classList.add('sub-topic-plate');
 
-        // Escape the code to ensure HTML characters are displayed correctly
-        const escapedCode = escapeHtml(topic.code);
-
         plate.innerHTML = `
             <h3>${topic.title}</h3>
             <p><strong>Why it matters:</strong> ${topic.reason}</p>
-            <code>${escapedCode}</code>
+            <pre><code>${topic.code}</code></pre>
             <p><strong>Extra Information:</strong> ${topic.extra}</p>
             <button onclick="deleteTopic('${category}', ${index})">Delete Topic</button>
         `;
@@ -116,14 +61,11 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     const code = document.getElementById('code').value;
     const extra = document.getElementById('extra').value;
 
-    // Escape the code to ensure HTML characters are handled properly
-    const escapedCode = escapeHtml(code);
-
     // Create a new topic object
     const newTopic = {
         title: title,
         reason: reason,
-        code: escapedCode, // Use escaped code
+        code: code,
         extra: extra
     };
 
@@ -167,7 +109,6 @@ document.getElementById('add-category-btn').addEventListener('click', function()
         newCategoryPlate.innerHTML = `
             <h2>${newCategoryName}</h2>
             <p>Learn about ${newCategoryName}!</p>
-            <button onclick="deleteCategory('${newCategoryName.toLowerCase()}')">Delete Category</button>
         `;
 
         // Add the new category plate to the container
@@ -209,7 +150,6 @@ function displayCategories() {
         categoryPlate.innerHTML = `
             <h2>${category}</h2>
             <p>Learn about ${category}!</p>
-            <button onclick="deleteCategory('${category}')">Delete Category</button>
         `;
         document.getElementById('main-container').appendChild(categoryPlate);
     });
