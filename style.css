@@ -1,52 +1,65 @@
 /* General body styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
     background-color: #f8f8f8;
     color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 /* Header styles */
 header {
-    background-color: #007BFF; /* Changed to blue */
+    background: linear-gradient(135deg, #007BFF, #00aaff); /* Blue gradient background */
     color: white;
     text-align: center;
-    padding: 30px 0;
+    padding: 40px 0;
+    border-bottom: 5px solid #005c99; /* Adding a bottom border to create separation */
 }
 
 header h1 {
-    font-size: 3em;
+    font-size: 3.2em;
+    margin-bottom: 0.2em;
+    letter-spacing: 2px;
+    font-weight: bold;
 }
 
 header p {
     font-size: 1.2em;
+    font-weight: 300;
 }
 
 /* Main Categories Section */
 .main-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    padding: 30px;
+    padding: 40px;
+    justify-content: center;
 }
 
 .category-plate {
     background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .category-plate:hover {
     transform: translateY(-10px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+    background-color: #f1f9ff; /* Slight background color change on hover */
 }
 
 .category-plate h2 {
-    font-size: 1.8em;
+    font-size: 2em;
     margin-bottom: 10px;
+    color: #333;
+    font-weight: bold;
 }
 
 .category-plate p {
@@ -57,73 +70,113 @@ header p {
 /* Sub-Topics Section (Tiles) */
 .sub-topic-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     padding: 30px;
 }
 
 .sub-topic-plate {
     background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
     text-align: center;
+    position: relative;
 }
 
 .sub-topic-plate:hover {
     transform: translateY(-10px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+    background-color: #f7f7f7;
 }
 
 .sub-topic-plate h3 {
-    font-size: 1.6em;
-    margin-bottom: 10px;
+    font-size: 1.7em;
+    margin-bottom: 12px;
+    color: #333;
+    font-weight: 600;
 }
 
 .sub-topic-plate p {
-    font-size: 1em;
-    color: #555;
+    font-size: 1.1em;
+    color: #666;
+    margin-bottom: 10px;
 }
 
 .sub-topic-plate code {
     background-color: #f4f4f4;
-    padding: 5px;
+    padding: 10px;
     display: block;
     margin-top: 10px;
     font-family: 'Courier New', Courier, monospace;
+    border-radius: 5px;
+    color: #333;
+    font-size: 1.05em;
+    overflow-x: auto;
+    word-wrap: break-word;
 }
 
 /* Add Topic Form Styles */
 .add-topic-form {
     background-color: #fff;
-    padding: 20px;
+    padding: 30px;
     margin: 20px auto;
     width: 90%;
-    max-width: 600px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .add-topic-form input,
 .add-topic-form textarea {
     width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 1em;
+    font-family: 'Roboto', Arial, sans-serif;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.add-topic-form input:focus,
+.add-topic-form textarea:focus {
+    border-color: #007BFF;
+    outline: none;
 }
 
 .add-topic-form button {
-    background-color: #007BFF; /* Changed to blue */
+    background-color: #007BFF;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 25px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
 }
 
 .add-topic-form button:hover {
     background-color: #0056b3; /* Darker blue for hover effect */
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2.5em;
+    }
+
+    .category-plate,
+    .sub-topic-plate {
+        padding: 20px;
+    }
+
+    .add-topic-form {
+        padding: 20px;
+        margin: 10px;
+    }
 }
