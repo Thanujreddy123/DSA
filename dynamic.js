@@ -65,6 +65,16 @@ function saveTopicsToLocalStorage() {
     localStorage.setItem('topics', JSON.stringify(storedTopics));
 }
 
+// Function to escape HTML characters
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 // Function to display sub-topics based on the selected category
 function showSubTopics(category) {
     currentCategory = category; // Set the current category
@@ -81,10 +91,13 @@ function showSubTopics(category) {
         const plate = document.createElement('div');
         plate.classList.add('sub-topic-plate');
 
+        // Escape the code to ensure HTML characters are displayed correctly
+        const escapedCode = escapeHtml(topic.code);
+
         plate.innerHTML = `
             <h3>${topic.title}</h3>
             <p><strong>Why it matters:</strong> ${topic.reason}</p>
-            <code>${topic.code}</code>
+            <code>${escapedCode}</code>
             <p><strong>Extra Information:</strong> ${topic.extra}</p>
             <button onclick="deleteTopic('${category}', ${index})">Delete Topic</button>
         `;
@@ -103,11 +116,14 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     const code = document.getElementById('code').value;
     const extra = document.getElementById('extra').value;
 
+    // Escape the code to ensure HTML characters are handled properly
+    const escapedCode = escapeHtml(code);
+
     // Create a new topic object
     const newTopic = {
         title: title,
         reason: reason,
-        code: code,
+        code: escapedCode, // Use escaped code
         extra: extra
     };
 
