@@ -28,7 +28,7 @@ function escapeHtml(text) {
     return element.innerHTML;
 }
 
-// Function to unescape HTML special characters
+// Function to unescape HTML special characters (optional)
 function unescapeHtml(text) {
     const element = document.createElement('div');
     if (text) {
@@ -61,7 +61,7 @@ function showSubTopics(category) {
         plate.innerHTML = `
             <h3>${topic.title}</h3>
             <p><strong>Why it matters:</strong> ${topic.reason}</p>
-            <pre><code>${unescapeHtml(topic.code)}</code></pre>  <!-- Display the code with unescaped characters -->
+            <pre><code>${escapeHtml(topic.code)}</code></pre>
             <p><strong>Extra Information:</strong> ${topic.extra}</p>
             <button onclick="deleteTopic('${category}', ${index})">Delete Topic</button>
         `;
@@ -87,7 +87,7 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     const newTopic = {
         title: title,
         reason: reason,
-        code: escapedCode,  // Store the escaped code
+        code: escapedCode,
         extra: extra
     };
 
@@ -109,16 +109,15 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     document.getElementById('topicForm').reset();
 });
 
+// ... (previous code)
+
 // Function to handle adding new categories
 document.getElementById('add-category-btn').addEventListener('click', function() {
     const newCategoryName = prompt("Enter the name of the new category:");
 
-    // If the user provides a category name and it doesn't already exist
+    // Add validation and error handling here
     if (newCategoryName && !storedTopics[newCategoryName.toLowerCase()]) {
-        // Add the new category with an empty array of topics
         storedTopics[newCategoryName.toLowerCase()] = [];
-
-        // Save updated topics to LocalStorage
         saveTopicsToLocalStorage();
 
         // Create a new category plate and append it to the page
@@ -133,7 +132,6 @@ document.getElementById('add-category-btn').addEventListener('click', function()
             <p>Learn about ${newCategoryName}!</p>
         `;
 
-        // Add the new category plate to the container
         document.getElementById('new-categories-container').appendChild(newCategoryPlate);
     } else {
         alert("Category name is either empty or already exists.");
@@ -145,17 +143,8 @@ function deleteCategory(category) {
     if (confirm(`Are you sure you want to delete the category: ${category}?`)) {
         delete storedTopics[category];
         saveTopicsToLocalStorage();
-        document.getElementById('main-container').innerHTML = ''; // Clear displayed categories
-        displayCategories(); // Re-render categories after deletion
-    }
-}
-
-// Function to delete a topic
-function deleteTopic(category, index) {
-    if (confirm(`Are you sure you want to delete the topic: ${storedTopics[category][index].title}?`)) {
-        storedTopics[category].splice(index, 1);
-        saveTopicsToLocalStorage();
-        showSubTopics(category); // Refresh the topics for the selected category
+        document.getElementById('main-container').innerHTML = '';
+        displayCategories();
     }
 }
 
@@ -173,9 +162,11 @@ function displayCategories() {
             <h2>${category}</h2>
             <p>Learn about ${category}!</p>
         `;
+
         document.getElementById('main-container').appendChild(categoryPlate);
     });
 }
 
 // Initial display of categories on page load
 displayCategories();
+
