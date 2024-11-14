@@ -28,15 +28,6 @@ function escapeHtml(text) {
     return element.innerHTML;
 }
 
-// Function to unescape HTML special characters (optional)
-function unescapeHtml(text) {
-    const element = document.createElement('div');
-    if (text) {
-        element.innerHTML = text;
-    }
-    return element.innerText;
-}
-
 // Save the topics to LocalStorage
 function saveTopicsToLocalStorage() {
     localStorage.setItem('topics', JSON.stringify(storedTopics));
@@ -58,13 +49,24 @@ function showSubTopics(category) {
         const plate = document.createElement('div');
         plate.classList.add('sub-topic-plate');
 
+        // Create the delete button here
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete Topic';
+
+        // Attach the click event listener for deleting the topic
+        deleteButton.addEventListener('click', function() {
+            deleteTopic(category, index);
+        });
+
         plate.innerHTML = `
             <h3>${topic.title}</h3>
             <p><strong>Why it matters:</strong> ${topic.reason}</p>
             <pre><code>${escapeHtml(topic.code)}</code></pre>
             <p><strong>Extra Information:</strong> ${topic.extra}</p>
-            <button onclick="deleteTopic('${category}', ${index})">Delete Topic</button>
         `;
+
+        // Append the button to the plate
+        plate.appendChild(deleteButton);
 
         subTopicContainer.appendChild(plate);
     });
@@ -109,8 +111,6 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     document.getElementById('topicForm').reset();
 });
 
-// ... (previous code)
-
 // Function to handle adding new categories
 document.getElementById('add-category-btn').addEventListener('click', function() {
     const newCategoryName = prompt("Enter the name of the new category:");
@@ -138,13 +138,27 @@ document.getElementById('add-category-btn').addEventListener('click', function()
     }
 });
 
+// Function to delete a topic
+function deleteTopic(category, index) {
+    if (confirm(`Are you sure you want to delete the topic: ${storedTopics[category][index].title}?`)) {
+        // Remove the topic from the category by index
+        storedTopics[category].splice(index, 1);
+
+        // Save the updated topics to localStorage
+        saveTopicsToLocalStorage();
+
+        // Refresh the displayed sub-topics
+        showSubTopics(category);
+    }
+}
+
 // Function to delete a category
 function deleteCategory(category) {
     if (confirm(`Are you sure you want to delete the category: ${category}?`)) {
         delete storedTopics[category];
         saveTopicsToLocalStorage();
-        document.getElementById('main-container').innerHTML = '';
-        displayCategories();
+        document.getElementById('main-container').innerHTML = ''; // Clear the container
+        displayCategories(); // Re-render categories after deletion
     }
 }
 
@@ -161,6 +175,7 @@ function displayCategories() {
         categoryPlate.innerHTML = `
             <h2>${category}</h2>
             <p>Learn about ${category}!</p>
+            <button onclick="deleteCategory('${category}')">Delete Category</button>
         `;
 
         document.getElementById('main-container').appendChild(categoryPlate);
@@ -169,4 +184,3 @@ function displayCategories() {
 
 // Initial display of categories on page load
 displayCategories();
-
