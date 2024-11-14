@@ -1,129 +1,104 @@
-/* General body styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
-    color: #333;
+let currentCategory = ''; // Variable to store the current selected category
+
+// Load topics from localStorage or use the default if none exists
+const storedTopics = JSON.parse(localStorage.getItem('topics')) || {
+    sql: [
+        {
+            title: 'SQL Insertion',
+            reason: 'Inserting data into a database is crucial for data management.',
+            code: 'INSERT INTO users (name, age) VALUES ("John", 25);',
+            extra: 'Used to add new records into the database.'
+        },
+        {
+            title: 'SQL Deletion',
+            reason: 'Deleting data from a database is essential for data management.',
+            code: 'DELETE FROM users WHERE id = 1;',
+            extra: 'Used to remove data from a table based on a condition.'
+        }
+    ],
+    dsa: [
+        {
+            title: 'Arrays',
+            reason: 'Arrays are data structures used to store multiple values.',
+            code: 'let arr = [1, 2, 3, 4];',
+            extra: 'Arrays provide fast access to elements by index.'
+        },
+        {
+            title: 'Linked Lists',
+            reason: 'Linked lists are data structures with nodes connected through pointers.',
+            code: 'let node1 = { value: 1, next: null };',
+            extra: 'Good for dynamic memory allocation and easy insertion/deletion.'
+        }
+    ]
+};
+
+// Function to escape HTML special characters (like < and >)
+function escapeHTML(str) {
+    var element = document.createElement('div');
+    if (str) {
+        element.innerText = str;
+        element.textContent = str;
+    }
+    return element.innerHTML;
 }
 
-/* Header styles */
-header {
-    background-color: #007BFF; /* Changed to blue */
-    color: white;
-    text-align: center;
-    padding: 30px 0;
+// Save the topics to LocalStorage
+function saveTopicsToLocalStorage() {
+    localStorage.setItem('topics', JSON.stringify(storedTopics));
 }
 
-header h1 {
-    font-size: 3em;
+// Function to display sub-topics based on the selected category
+function showSubTopics(category) {
+    currentCategory = category; // Set the current category
+    const subTopicContainer = document.getElementById('sub-topic-container');
+    const addTopicForm = document.getElementById('add-topic-form');
+    subTopicContainer.innerHTML = ''; // Clear previous content
+    addTopicForm.style.display = 'block'; // Show the form to add new topics
+
+    const selectedTopics = storedTopics[category] || [];
+
+    selectedTopics.forEach((topic, index) => {
+        const plate = document.createElement('div');
+        plate.classList.add('sub-topic-plate');
+
+        plate.innerHTML = `
+            <h3>${topic.title}</h3>
+            <p><strong>Why it matters:</strong> ${topic.reason}</p>
+            <pre><code>${topic.code}</code></pre> <!-- Display the code inside <pre><code> -->
+            <p><strong>Extra Information:</strong> ${topic.extra}</p>
+            <button onclick="deleteTopic('${category}', ${index})">Delete Topic</button>
+        `;
+
+        subTopicContainer.appendChild(plate);
+    });
 }
 
-header p {
-    font-size: 1.2em;
-}
+// Function to handle adding new topics
+document.getElementById('topicForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting
 
-/* Main Categories Section */
-.main-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 30px;
-}
+    const title = document.getElementById('title').value;
+    const reason = document.getElementById('reason').value;
+    const code = document.getElementById('code').value;
+    const extra = document.getElementById('extra').value;
 
-.category-plate {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-align: center;
-}
+    // Escape the code to prevent special characters from being interpreted as HTML
+    const escapedCode = escapeHTML(code);
 
-.category-plate:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-}
+    const newTopic = {
+        title: title,
+        reason: reason,
+        code: escapedCode, // Store the escaped code
+        extra: extra
+    };
 
-.category-plate h2 {
-    font-size: 1.8em;
-    margin-bottom: 10px;
-}
+    if (!storedTopics[currentCategory]) {
+        storedTopics[currentCategory] = [];
+    }
 
-.category-plate p {
-    font-size: 1.1em;
-    color: #555;
-}
+    storedTopics[currentCategory].push(newTopic);
 
-/* Sub-Topics Section (Tiles) */
-.sub-topic-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 30px;
-}
-
-.sub-topic-plate {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-align: center;
-}
-
-.sub-topic-plate:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-.sub-topic-plate h3 {
-    font-size: 1.6em;
-    margin-bottom: 10px;
-}
-
-.sub-topic-plate p {
-    font-size: 1em;
-    color: #555;
-}
-
-.sub-topic-plate code {
-    background-color: #f4f4f4;
-    padding: 5px;
-    display: block;
-    margin-top: 10px;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-/* Add Topic Form Styles */
-.add-topic-form {
-    background-color: #fff;
-    padding: 20px;
-    margin: 20px auto;
-    width: 90%;
-    max-width: 600px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.add-topic-form input,
-.add-topic-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-.add-topic-form button {
-    background-color: #007BFF; /* Changed to blue */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.add-topic-form button:hover {
-    background-color: #0056b3; /* Darker blue for hover effect */
-}
+    saveTopicsToLocalStorage(); // Save updated topics to localStorage
+    showSubTopics(currentCategory); // Refresh sub-topics display
+    document.getElementById('topicForm').reset(); // Reset the form
+});
