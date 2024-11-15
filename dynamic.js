@@ -18,14 +18,13 @@ const storedTopics = JSON.parse(localStorage.getItem('topics')) || {
     ]
 };
 
-// Function to escape HTML special characters
+// Function to escape HTML special characters (use only when you need to escape)
 function escapeHtml(text) {
     const element = document.createElement('div');
     if (text) {
-        element.innerText = text;
-        element.textContent = text;
+        element.textContent = text;  // Only use textContent to avoid HTML parsing
     }
-    return element.innerHTML;
+    return element.innerHTML;  // Returns the HTML-escaped version of the string
 }
 
 // Save the topics to LocalStorage
@@ -61,7 +60,7 @@ function showSubTopics(category) {
         plate.innerHTML = `
             <h3>${topic.title}</h3>
             <p><strong>Why it matters:</strong> ${topic.reason}</p>
-            <pre><code>${escapeHtml(topic.code)}</code></pre>
+            <pre><code>${topic.code}</code></pre>
             <p><strong>Extra Information:</strong> ${topic.extra}</p>
         `;
 
