@@ -1,3 +1,7 @@
+// Import Firebase modules using ES module syntax
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js";
+
 // Firebase configuration (replace with your actual Firebase credentials)
 const firebaseConfig = {
     apiKey: "AIzaSyBaR7ud2D3Dg9gsgJq67WKK3i2v-UaoM2E",
@@ -9,8 +13,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Variable to hold the current category
 let currentCategory = ''; 
@@ -33,9 +37,10 @@ function showSubTopics(category) {
     addTopicForm.style.display = 'block'; // Show the form to add new topics
 
     // Fetch the topics for the selected category from Firestore
-    db.collection('topics').doc(category).get().then((doc) => {
-        if (doc.exists) {
-            const selectedTopics = doc.data().topics || [];
+    const categoryRef = doc(db, "topics", category);
+    getDocs(categoryRef).then((docSnapshot) => {
+        if (docSnapshot.exists) {
+            const selectedTopics = docSnapshot.data().topics || [];
 
             // Create a plate for each topic
             selectedTopics.forEach((topic, index) => {
@@ -91,9 +96,9 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     };
 
     // Add the new topic to Firestore
-    const categoryRef = db.collection('topics').doc(currentCategory);
-    categoryRef.update({
-        topics: firebase.firestore.FieldValue.arrayUnion(newTopic)
+    const categoryRef = doc(db, "topics", currentCategory);
+    updateDoc(categoryRef, {
+        topics: arrayUnion(newTopic)
     }).then(() => {
         // Refresh the topics after adding
         showSubTopics(currentCategory);
@@ -109,12 +114,12 @@ document.getElementById('add-category-btn').addEventListener('click', function()
 
     // Validate and check if category already exists
     if (newCategoryName) {
-        const categoryRef = db.collection('topics').doc(newCategoryName.toLowerCase());
+        const categoryRef = doc(db, "topics", newCategoryName.toLowerCase());
 
-        categoryRef.get().then((docSnapshot) => {
+        getDocs(categoryRef).then((docSnapshot) => {
             if (!docSnapshot.exists) {
                 // Create new category in Firestore
-                categoryRef.set({
+                setDoc(categoryRef, {
                     name: newCategoryName,
                     topics: []  // Empty array for topics
                 }).then(() => {
@@ -143,11 +148,10 @@ document.getElementById('add-category-btn').addEventListener('click', function()
 
 // Function to delete a topic
 function deleteTopic(category, index) {
-    if (confirm(`Are you sure you want to delete the topic: ${storedTopics[category][index].title}?`)) {
-        // Remove the topic from Firestore
-        const categoryRef = db.collection('topics').doc(category);
-        categoryRef.update({
-            topics: firebase.firestore.FieldValue.arrayRemove(storedTopics[category][index])
+    if (confirm(`Are you sure you want to delete the topic?`)) {
+        const categoryRef = doc(db, "topics", category);
+        updateDoc(categoryRef, {
+            topics: arrayRemove(storedTopics[category][index])
         }).then(() => {
             // Refresh the displayed sub-topics
             showSubTopics(category);
@@ -159,7 +163,8 @@ function deleteTopic(category, index) {
 
 // Function to display all categories
 function displayCategories() {
-    db.collection('topics').get().then((querySnapshot) => {
+    const categoriesRef = collection(db, 'topics');
+    getDocs(categoriesRef).then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             const category = doc.id;
             const categoryPlate = document.createElement('div');
