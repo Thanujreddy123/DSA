@@ -1,8 +1,8 @@
-// Import Firebase SDK modules using ES module syntax
+// Import Firebase SDK modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
 import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
 
-// Firebase configuration (replace with your actual Firebase credentials)
+// Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyBaR7ud2D3Dg9gsgJq67WKK3i2v-UaoM2E",
     authDomain: "attendance-app-df536.firebaseapp.com",
@@ -16,19 +16,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Variable to hold the current category
+// Variable to store the selected category
 let currentCategory = ''; 
 
-// Function to escape HTML special characters (use only when you need to escape)
-function escapeHtml(text) {
-    const element = document.createElement('div');
-    if (text) {
-        element.textContent = text;  // Only use textContent to avoid HTML parsing
-    }
-    return element.innerHTML;  // Returns the HTML-escaped version of the string
-}
-
-// Function to display sub-topics based on the selected category
+// Function to display sub-topics based on selected category
 function showSubTopics(category) {
     currentCategory = category; // Set the current category
     const subTopicContainer = document.getElementById('sub-topic-container');
@@ -84,14 +75,11 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     const code = document.getElementById('code').value;
     const extra = document.getElementById('extra').value;
 
-    // Escape the code to prevent special characters from breaking HTML
-    const escapedCode = escapeHtml(code);
-
     // Create a new topic object
     const newTopic = {
         title: title,
         reason: reason,
-        code: escapedCode,
+        code: code,
         extra: extra
     };
 
