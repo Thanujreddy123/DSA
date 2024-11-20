@@ -12,59 +12,43 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Function to display categories
+// Function to display categories and topics
 function displayCategories(topics) {
     const container = document.getElementById('categories-container');
-    
-    if (!container) {
-        console.error('Categories container not found!');
-        return;
-    }
+    container.innerHTML = '';  // Clear previous categories
 
-    // Clear previous categories
-    container.innerHTML = '';
-
-    const categories = Object.keys(topics);  // Extract category names from the topics object
-    categories.forEach(category => {
+    // Loop through categories and display them
+    Object.keys(topics).forEach((category) => {
         const categoryPlate = document.createElement('div');
         categoryPlate.classList.add('category-plate');
         
-        // Event listener for category click
         categoryPlate.onclick = function() {
             showSubTopics(category);
         };
 
-        // Add category name to the plate
         categoryPlate.innerHTML = `
             <h2>${category}</h2>
             <p>Learn about ${category}!</p>
         `;
-
-        // Append the plate to the container
         container.appendChild(categoryPlate);
     });
 }
 
-// Function to show sub-topics when a category is clicked
+// Function to show topics when a category is clicked
 function showSubTopics(category) {
     const subTopicContainer = document.getElementById('sub-topic-container');
-    
-    // Clear the sub-topic container
-    subTopicContainer.innerHTML = '';
+    subTopicContainer.innerHTML = '';  // Clear previous topics
 
-    const selectedTopics = storedTopics[category] || []; // Retrieve topics for the selected category
-
-    selectedTopics.forEach((topic, index) => {
+    const selectedTopics = storedTopics[category] || [];
+    selectedTopics.forEach((topic) => {
         const plate = document.createElement('div');
         plate.classList.add('sub-topic-plate');
-
         plate.innerHTML = `
             <h3>${topic.title}</h3>
             <p><strong>Why it matters:</strong> ${topic.reason}</p>
             <pre><code>${topic.code}</code></pre>
             <p><strong>Extra Information:</strong> ${topic.extra}</p>
         `;
-
         subTopicContainer.appendChild(plate);
     });
 }
@@ -75,21 +59,53 @@ async function retrieveDataFromFirebase() {
         const snapshot = await db.collection("topics").get();
         snapshot.forEach((doc) => {
             const data = doc.data();
-            console.log('Document data:', data);
-            storedTopics[doc.id] = data.topics || [];  // Assuming the topics are stored as an array
+            storedTopics[doc.id] = data.topics || [];
         });
     } catch (error) {
         console.error("Error retrieving data from Firebase:", error);
     }
 }
 
-// Call this function on page load
-async function startApp() {
-    await retrieveDataFromFirebase();  // Retrieve data from Firebase (update topics)
-    displayCategories(storedTopics);  // Display categories on the page
+// Add a new category and topic to Firestore
+async function addCategoryToFirebase(categoryName, topic) {
+    try {
+        const docRef = await db.collection("topics").add({
+            name: categoryName,
+            topics: [topic]
+        });
+        console.log("Document written with ID: ", docRef.id);
+        // Reload data after adding new category
+        retrieveDataFromFirebase().then(() => displayCategories(storedTopics));
+    } catch (error) {
+        console.error("Error adding document: ", error);
+    }
 }
 
-// Call the startApp function when the page loads
-window.onload = startApp;
+// Event listener for adding a new category
+document.getElementById('add-category-btn').addEventListener('click', () => {
+    const categoryName = document.getElementById('new-category-name').value;
+    const topic = {
+        title: document.getElementById('new-category-name').value, // You can modify to accept more input fields
+        reason: "Reason for this topic",
+        code: "// code here",
+        extra: "Additional information"
+    };
 
-let storedTopics = {};  // Initialize an empty object to hold topics retrieved from Firebase
+    if (categoryName.trim()) {
+        addCategoryToFirebase(categoryName, topic);
+    } else {
+        alert('Please enter a valid category name');
+    }
+});
+
+// Start the app
+async function startApp() {
+    await retrieveDataFromFirebase();  // Retrieve existing categories and topics from Firebase
+    displayCategories(storedTopics);  // Display them on the page
+}
+
+// Initialize storedTopics object globally to hold topics
+let storedTopics = {};
+
+// Start the app when page is loaded
+window.onload = startApp;
