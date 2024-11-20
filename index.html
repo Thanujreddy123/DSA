@@ -12,21 +12,37 @@
         <p>Click on a category to explore topics, revise, and learn!</p>
     </header>
 
-    <!-- Form to add new category -->
-    <div id="new-category-form">
-        <input type="text" id="new-category-name" placeholder="Enter new category name" />
-        <textarea id="new-category-topic" placeholder="Enter topic for this category"></textarea>
-        <button id="add-category-btn">Add Category</button>
+    <div class="main-container" id="main-container">
+        <div class="category-plate" id="add-category-btn">
+            <h2>+</h2>
+            <p>Create New Category</p>
+        </div>
+
+        <div id="new-categories-container"></div>
     </div>
 
-    <!-- Container to hold categories dynamically -->
-    <div id="categories-container" class="categories-container"></div>
+    <div class="sub-topic-container" id="sub-topic-container"></div>
 
-    <!-- Firebase SDK (using CDN links) -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
+    <div class="add-topic-form" id="add-topic-form" style="display:none;">
+        <h2>Add a New Topic</h2>
+        <form id="topicForm">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
 
-    <!-- Your script for dynamic functionality -->
+            <label for="reason">Main Reason:</label>
+            <input type="text" id="reason" name="reason" required>
+
+              <label for="code">Code Example:</label>
+        <textarea id="code" name="code" rows="5" cols="40" required></textarea>
+
+            <label for="extra">Extra Information:</label>
+            <textarea id="extra" name="extra" required></textarea>
+
+            <button type="submit">Add Topic</button>
+        </form>
+    </div>
+
+    
     <script src="dynamic.js"></script>
 </body>
 </html>
