@@ -1,6 +1,6 @@
-// Import Firebase SDK modules
+// Import the necessary Firebase functions
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
-import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -29,8 +29,8 @@ function showSubTopics(category) {
 
     // Fetch the topics for the selected category from Firestore
     const categoryRef = doc(db, "topics", category);
-    getDocs(categoryRef).then((docSnapshot) => {
-        if (docSnapshot.exists) {
+    getDoc(categoryRef).then((docSnapshot) => {
+        if (docSnapshot.exists()) {
             const selectedTopics = docSnapshot.data().topics || [];
 
             // Create a plate for each topic
@@ -59,6 +59,8 @@ function showSubTopics(category) {
 
                 subTopicContainer.appendChild(plate);
             });
+        } else {
+            console.log("No topics found for this category");
         }
     }).catch((error) => {
         console.error("Error fetching topics: ", error);
@@ -104,8 +106,8 @@ document.getElementById('add-category-btn').addEventListener('click', function()
     if (newCategoryName) {
         const categoryRef = doc(db, "topics", newCategoryName.toLowerCase());
 
-        getDocs(categoryRef).then((docSnapshot) => {
-            if (!docSnapshot.exists) {
+        getDoc(categoryRef).then((docSnapshot) => {
+            if (!docSnapshot.exists()) {
                 // Create new category in Firestore
                 setDoc(categoryRef, {
                     name: newCategoryName,
