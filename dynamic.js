@@ -1,6 +1,3 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-
 // Firebase config (replace with your actual Firebase credentials)
 const firebaseConfig = {
   apiKey: "AIzaSyBaR7ud2D3Dg9gsgJq67WKK3i2v-UaoM2E",
@@ -12,8 +9,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // Function to display categories
 function displayCategories(topics) {
@@ -75,7 +72,7 @@ function showSubTopics(category) {
 // Retrieve data from Firebase
 async function retrieveDataFromFirebase() {
     try {
-        const snapshot = await getDocs(collection(db, "topics"));
+        const snapshot = await db.collection("topics").get();
         snapshot.forEach((doc) => {
             const data = doc.data();
             console.log('Document data:', data);
