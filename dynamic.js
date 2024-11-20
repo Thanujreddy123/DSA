@@ -1,6 +1,6 @@
-// Import Firebase modules using ES module syntax
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js";
+// Import Firebase SDK modules using ES module syntax
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
+import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
 
 // Firebase configuration (replace with your actual Firebase credentials)
 const firebaseConfig = {
