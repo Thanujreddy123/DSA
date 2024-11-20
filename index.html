@@ -12,11 +12,15 @@
         <p>Click on a category to explore topics, revise, and learn!</p>
     </header>
 
+    <!-- Form to add new category -->
+    <div id="new-category-form">
+        <input type="text" id="new-category-name" placeholder="Enter new category name" />
+        <textarea id="new-category-topic" placeholder="Enter topic for this category"></textarea>
+        <button id="add-category-btn">Add Category</button>
+    </div>
+
     <!-- Container to hold categories dynamically -->
     <div id="categories-container" class="categories-container"></div>
-
-    <!-- Sub-topic container (to display topics for a selected category) -->
-    <div class="sub-topic-container" id="sub-topic-container"></div>
 
     <!-- Firebase SDK (using CDN links) -->
     <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
