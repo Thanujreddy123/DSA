@@ -16,48 +16,106 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// The current category for adding topics
-let currentCategory = ''; 
+// Step 1: Push data from localStorage to Firestore
 
-// Function to save topics to Firestore
-async function saveTopicsToFirestore(category, topics) {
-    const topicsCollectionRef = collection(db, 'categories');
-    // Adding category data to Firestore
-    try {
-        await addDoc(topicsCollectionRef, {
-            category: category,
-            topics: topics
-        });
-        console.log('Data saved to Firestore');
-    } catch (e) {
-        console.error("Error adding document: ", e);
+async function pushDataToFirebase() {
+    // Load topics from localStorage
+    const storedTopics = JSON.parse(localStorage.getItem('topics')) || {};
+
+    // Loop through each category in storedTopics
+    for (let category in storedTopics) {
+        const topics = storedTopics[category];
+
+        // Push topics to Firebase
+        if (topics && topics.length > 0) {
+            try {
+                // Reference to the Firestore collection for the category
+                const categoryRef = collection(db, "categories");
+
+                // Add each topic to Firestore
+                for (let topic of topics) {
+                    await addDoc(categoryRef, {
+                        category: category,
+                        title: topic.title,
+                        reason: topic.reason,
+                        code: topic.code,
+                        extra: topic.extra,
+                    });
+                }
+
+                console.log(`Successfully added topics for category: ${category}`);
+            } catch (error) {
+                console.error("Error adding data to Firebase: ", error);
+            }
+        }
     }
 }
 
-// Load topics from Firestore
-async function loadTopicsFromFirestore(category) {
-    const querySnapshot = await getDocs(collection(db, 'categories'));
+// Step 2: Retrieve data from Firebase (only from Firebase, not localStorage)
+
+async function retrieveDataFromFirebase() {
+    const querySnapshot = await getDocs(collection(db, "categories"));
+    let topics = {};
+
     querySnapshot.forEach((doc) => {
-        if (doc.data().category === category) {
-            const topics = doc.data().topics;
-            displaySubTopics(topics);  // Display the topics on the page
+        const data = doc.data();
+        const category = data.category;
+
+        // If category doesn't exist in the object, initialize it
+        if (!topics[category]) {
+            topics[category] = [];
         }
+
+        // Push the topic data into the respective category
+        topics[category].push({
+            title: data.title,
+            reason: data.reason,
+            code: data.code,
+            extra: data.extra,
+        });
     });
+
+    // After retrieving the data from Firestore, save it to localStorage
+    localStorage.setItem('topics', JSON.stringify(topics));
+    console.log("Data retrieved from Firebase and saved to localStorage:", topics);
+
+    // Now you can display the topics on your webpage
+    displayCategories(topics);
 }
 
-// Function to display topics on the page
-function displaySubTopics(topics) {
+// Function to display all categories and topics
+function displayCategories(topics) {
+    const container = document.getElementById('categories-container');
+    container.innerHTML = '';  // Clear previous categories
+
+    // Display each category
+    for (const category in topics) {
+        const categoryPlate = document.createElement('div');
+        categoryPlate.classList.add('category-plate');
+        categoryPlate.onclick = function() {
+            showSubTopics(category, topics);
+        };
+
+        categoryPlate.innerHTML = `
+            <h2>${category}</h2>
+            <p>Learn about ${category}!</p>
+        `;
+
+        container.appendChild(categoryPlate);
+    }
+}
+
+// Function to display sub-topics of a selected category
+function showSubTopics(category, topics) {
     const subTopicContainer = document.getElementById('sub-topic-container');
-    subTopicContainer.innerHTML = '';  // Clear existing topics
-    topics.forEach((topic, index) => {
+    subTopicContainer.innerHTML = ''; // Clear previous content
+
+    // Get the topics based on the category
+    const selectedTopics = topics[category] || [];
+
+    selectedTopics.forEach((topic, index) => {
         const plate = document.createElement('div');
         plate.classList.add('sub-topic-plate');
-        
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete Topic';
-        deleteButton.addEventListener('click', function () {
-            deleteTopic(index);
-        });
 
         plate.innerHTML = `
             <h3>${topic.title}</h3>
@@ -66,46 +124,27 @@ function displaySubTopics(topics) {
             <p><strong>Extra Information:</strong> ${topic.extra}</p>
         `;
 
-        plate.appendChild(deleteButton);
         subTopicContainer.appendChild(plate);
     });
 }
 
-// Function to handle form submission for new topics
-document.getElementById('topicForm').addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent form submission
-
-    const title = document.getElementById('title').value;
-    const reason = document.getElementById('reason').value;
-    const code = document.getElementById('code').value;
-    const extra = document.getElementById('extra').value;
-
-    const newTopic = {
-        title: title,
-        reason: reason,
-        code: code,
-        extra: extra
-    };
-
-    // Save the topic to Firestore
-    saveTopicsToFirestore(currentCategory, [newTopic]);
-
-    // Reset the form
-    document.getElementById('topicForm').reset();
-});
-
-// Function to handle category selection
-document.getElementById('add-category-btn').addEventListener('click', function () {
-    const newCategoryName = prompt("Enter the name of the new category:");
-    if (newCategoryName && !currentCategory) {
-        currentCategory = newCategoryName.toLowerCase();
-        loadTopicsFromFirestore(currentCategory);
+// Function to escape HTML special characters
+function escapeHtml(text) {
+    const element = document.createElement('div');
+    if (text) {
+        element.textContent = text;  // Only use textContent to avoid HTML parsing
     }
-});
-
-// Function to delete a topic from Firestore
-function deleteTopic(index) {
-    // Logic to delete a topic from Firestore (you can implement this similarly as above)
-    console.log("Deleting topic at index: ", index);
+    return element.innerHTML;  // Returns the HTML-escaped version of the string
 }
 
+// Start the process
+async function startApp() {
+    // Step 1: Push data from localStorage to Firestore
+    await pushDataToFirebase();
+
+    // Step 2: Retrieve data from Firestore and display it
+    await retrieveDataFromFirebase();
+}
+
+// Initialize the app
+startApp();
