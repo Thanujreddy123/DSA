@@ -1,4 +1,4 @@
-// Initialize Firebase
+// Import Firebase modules
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 
@@ -21,28 +21,36 @@ let currentCategory = ''; // Variable to store the current selected category
 // Function to display categories
 function displayCategories() {
     const categoriesRef = collection(db, 'topics');
-    getDocs(categoriesRef).then((querySnapshot) => {
-        if (querySnapshot.empty) {
-            console.log("No categories found");
-        }
-        querySnapshot.forEach((doc) => {
-            const category = doc.id;
-            const categoryPlate = document.createElement('div');
-            categoryPlate.classList.add('category-plate');
-            categoryPlate.onclick = function() {
-                showSubTopics(category);
-            };
+    console.log("Fetching categories from Firestore...");
 
-            categoryPlate.innerHTML = `
-                <h2>${category}</h2>
-                <p>Learn about ${category}!</p>
-            `;
+    getDocs(categoriesRef)
+        .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                console.log("No categories found in Firestore.");
+                return;
+            }
 
-            document.getElementById('main-container').appendChild(categoryPlate);
+            querySnapshot.forEach((doc) => {
+                const category = doc.id;
+                console.log(`Category found: ${category}`);
+
+                const categoryPlate = document.createElement('div');
+                categoryPlate.classList.add('category-plate');
+                categoryPlate.onclick = function() {
+                    showSubTopics(category);
+                };
+
+                categoryPlate.innerHTML = `
+                    <h2>${category}</h2>
+                    <p>Learn about ${category}!</p>
+                `;
+
+                document.getElementById('main-container').appendChild(categoryPlate);
+            });
+        })
+        .catch((error) => {
+            console.error("Error fetching categories: ", error);
         });
-    }).catch((error) => {
-        console.error("Error displaying categories: ", error);
-    });
 }
 
 // Function to show sub-topics for a category
@@ -55,36 +63,41 @@ function showSubTopics(category) {
 
     // Fetch topics for the selected category from Firestore
     const categoryRef = doc(db, "topics", category);
-    getDoc(categoryRef).then((docSnapshot) => {
-        if (docSnapshot.exists()) {
-            const selectedTopics = docSnapshot.data().topics || [];
+    console.log(`Fetching topics for category: ${category}`);
 
-            selectedTopics.forEach((topic, index) => {
-                const plate = document.createElement('div');
-                plate.classList.add('sub-topic-plate');
+    getDoc(categoryRef)
+        .then((docSnapshot) => {
+            if (docSnapshot.exists()) {
+                const selectedTopics = docSnapshot.data().topics || [];
+                console.log(`Found ${selectedTopics.length} topics for category: ${category}`);
 
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete Topic';
-                deleteButton.addEventListener('click', function() {
-                    deleteTopic(category, index);
+                selectedTopics.forEach((topic, index) => {
+                    const plate = document.createElement('div');
+                    plate.classList.add('sub-topic-plate');
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete Topic';
+                    deleteButton.addEventListener('click', function() {
+                        deleteTopic(category, index);
+                    });
+
+                    plate.innerHTML = `
+                        <h3>${topic.title}</h3>
+                        <p><strong>Why it matters:</strong> ${topic.reason}</p>
+                        <pre><code>${topic.code}</code></pre>
+                        <p><strong>Extra Information:</strong> ${topic.extra}</p>
+                    `;
+
+                    plate.appendChild(deleteButton);
+                    subTopicContainer.appendChild(plate);
                 });
-
-                plate.innerHTML = `
-                    <h3>${topic.title}</h3>
-                    <p><strong>Why it matters:</strong> ${topic.reason}</p>
-                    <pre><code>${topic.code}</code></pre>
-                    <p><strong>Extra Information:</strong> ${topic.extra}</p>
-                `;
-
-                plate.appendChild(deleteButton);
-                subTopicContainer.appendChild(plate);
-            });
-        } else {
-            console.log("No topics found for this category");
-        }
-    }).catch((error) => {
-        console.error("Error fetching topics: ", error);
-    });
+            } else {
+                console.log("No topics found for this category.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching topics: ", error);
+        });
 }
 
 // Function to handle adding new topics
@@ -97,51 +110,63 @@ document.getElementById('topicForm').addEventListener('submit', function(event) 
     const extra = document.getElementById('extra').value;
 
     const newTopic = { title, reason, code, extra };
+    console.log("Adding new topic:", newTopic);
 
     // Fetch the current topics and add the new one
     const categoryRef = doc(db, "topics", currentCategory);
-    getDoc(categoryRef).then((docSnapshot) => {
-        let topics = docSnapshot.exists() ? docSnapshot.data().topics : [];
-        topics.push(newTopic);
+    getDoc(categoryRef)
+        .then((docSnapshot) => {
+            let topics = docSnapshot.exists() ? docSnapshot.data().topics : [];
+            topics.push(newTopic);
 
-        // Save the updated topics back to Firestore
-        setDoc(categoryRef, { topics }, { merge: true }).then(() => {
-            showSubTopics(currentCategory);
-            document.getElementById('topicForm').reset();
-        }).catch((error) => {
-            console.error("Error adding topic: ", error);
+            // Save the updated topics back to Firestore
+            console.log(`Saving ${topics.length} topics for category: ${currentCategory}`);
+
+            setDoc(categoryRef, { topics }, { merge: true })
+                .then(() => {
+                    console.log("Topic added successfully");
+                    showSubTopics(currentCategory);
+                    document.getElementById('topicForm').reset();
+                })
+                .catch((error) => {
+                    console.error("Error saving topic: ", error);
+                });
+        })
+        .catch((error) => {
+            console.error("Error fetching category: ", error);
         });
-    }).catch((error) => {
-        console.error("Error fetching category: ", error);
-    });
 });
 
 // Function to handle adding new categories
 document.getElementById('add-category-btn').addEventListener('click', function() {
     const newCategoryName = prompt("Enter the name of the new category:");
 
-    if (newCategoryName && !storedTopics[newCategoryName.toLowerCase()]) {
+    if (newCategoryName && !newCategoryName.trim() === "") {
         const newCategoryRef = doc(db, 'topics', newCategoryName.toLowerCase());
+        console.log(`Creating new category: ${newCategoryName}`);
 
         // Initialize the new category with an empty list of topics
-        setDoc(newCategoryRef, { topics: [] }).then(() => {
-            const newCategoryPlate = document.createElement('div');
-            newCategoryPlate.classList.add('category-plate');
-            newCategoryPlate.onclick = function() {
-                showSubTopics(newCategoryName.toLowerCase());
-            };
+        setDoc(newCategoryRef, { topics: [] })
+            .then(() => {
+                console.log(`Category ${newCategoryName} created successfully`);
+                const newCategoryPlate = document.createElement('div');
+                newCategoryPlate.classList.add('category-plate');
+                newCategoryPlate.onclick = function() {
+                    showSubTopics(newCategoryName.toLowerCase());
+                };
 
-            newCategoryPlate.innerHTML = `
-                <h2>${newCategoryName}</h2>
-                <p>Learn about ${newCategoryName}!</p>
-            `;
+                newCategoryPlate.innerHTML = `
+                    <h2>${newCategoryName}</h2>
+                    <p>Learn about ${newCategoryName}!</p>
+                `;
 
-            document.getElementById('new-categories-container').appendChild(newCategoryPlate);
-        }).catch((error) => {
-            console.error("Error creating category: ", error);
-        });
+                document.getElementById('new-categories-container').appendChild(newCategoryPlate);
+            })
+            .catch((error) => {
+                console.error("Error creating category: ", error);
+            });
     } else {
-        alert("Category name is either empty or already exists.");
+        alert("Category name cannot be empty.");
     }
 });
 
